@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="text-align: center; margin-top: 6rem;">
+    <h1 style="font-size: 3.5rem; font-weight: 800; margin-bottom: 1rem; line-height: 1.2;">
+        Student Data <br>
+        <span style="background: linear-gradient(90deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Managed Securely</span>
+    </h1>
+    <p style="font-size: 1.25rem; color: var(--text-light); max-width: 700px; margin: 0 auto 3rem auto; line-height: 1.6;">
+        The Lumina Student Management System offers a beautiful, private interface for educators. 
+        Your data is isolated, secure, and accessible only by you.
+    </p>
+    
+    <div style="display: flex; gap: 1rem; justify-content: center; align-items: center;">
+        <a href="{{ url_for('register') }}" class="btn btn-primary" style="padding: 1rem 2.5rem; font-size: 1.1rem;">Create Account</a>
+        <a href="{{ url_for('login') }}" class="btn" style="background: white; color: var(--text-dark); border: 1px solid #cbd5e1;">Login</a>
+    </div>
+</div>
+
+<!-- Features Grid -->
+<div class="card-grid">
+    <div class="lumina-card" style="text-align: center;">
+        <i class="fa-solid fa-shield-halved" style="font-size: 2rem; color: var(--secondary); margin-bottom: 1rem;"></i>
+        <h3>Secure Auth</h3>
+        <p style="color: var(--text-light); margin-top: 0.5rem;">Password hashing and user isolation ensure data privacy.</p>
+    </div>
+    <div class="lumina-card" style="text-align: center;">
+        <i class="fa-solid fa-palette" style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;"></i>
+        <h3>Lumina UI</h3>
+        <p style="color: var(--text-light); margin-top: 0.5rem;">A modern, glass-morphism interface that is easy on the eyes.</p>
+    </div>
+    <div class="lumina-card" style="text-align: center;">
+        <i class="fa-solid fa-bolt" style="font-size: 2rem; color: #fbbf24; margin-bottom: 1rem;"></i>
+        <h3>Fast & Light</h3>
+        <p style="color: var(--text-light); margin-top: 0.5rem;">Built on Flask for rapid performance and quick loading times.</p>
+    </div>
+</div>
+{% endblock %}
