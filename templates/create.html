@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <div class="lumina-card">
+        <h2 style="margin-bottom: 1.5rem; font-weight: 700;">Add New Student</h2>
+        
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            
+            <div class="form-group">
+                <label>{{ form.name.label }}</label>
+                {{ form.name(class="form-control", placeholder="e.g. John Doe") }}
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>{{ form.roll_no.label }}</label>
+                    {{ form.roll_no(class="form-control", placeholder="e.g. CS-101") }}
+                </div>
+                <div class="form-group">
+                    <label>{{ form.gpa.label }}</label>
+                    {{ form.gpa(class="form-control", step="0.01", placeholder="0.0 - 4.0") }}
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>{{ form.email.label }}</label>
+                    {{ form.email(class="form-control", placeholder="e.g. john@example.com") }}
+                </div>
+                <div class="form-group">
+                    <label>{{ form.course.label }}</label>
+                    {{ form.course(class="form-control", placeholder="e.g. Computer Science") }}
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+                {{ form.submit(class="btn btn-primary", style="flex: 1;") }}
+                <a href="{{ url_for('student_list') }}" class="btn" style="background: white; border: 1px solid #cbd5e1; flex: 1; text-align: center; line-height: 2.5;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
