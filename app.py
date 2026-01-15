@@ -8,8 +8,15 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super-secret-key-change-in-production'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+
+# --- CRITICAL CHANGE FOR VERCEL ---
+# Use /tmp for the database to prevent Permission Denied crashes
+import os
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/site.db' 
+# -------------------------------
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
