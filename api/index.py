@@ -1,10 +1,11 @@
 # api/index.py
-from flask import Flask, jsonify
 from app import app as flask_app
 
-# Vercel requires a function named `handler` for serverless deployment
-def handler(request):
-    return flask_app(request.environ, start_response)
+# This is the Vercel entry point
+def handler(event, context):
+    # Vercel passes the event/context. We pass them to Flask.
+    # We provide a dummy 'start_response' to satisfy WSGI interface
+    return flask_app(event.environ, lambda status, headers: None)
 
 # This is to make it easier to test locally with `python api/index.py`
 if __name__ == '__main__':
