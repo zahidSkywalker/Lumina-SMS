@@ -4,3 +4,4 @@ Flask-WTF
 email_validator
 Flask-Login
 werkzeug
+psycopg2-binary
