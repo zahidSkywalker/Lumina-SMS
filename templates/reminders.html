@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="text-align: center; margin-bottom: 2rem;">
+    <h2 style="font-weight: 700; color: #ef4444;"><i class="fa-solid fa-bell"></i> Fee Reminders</h2>
+    <p style="color: var(--text-light);">List of students whose payment is overdue.</p>
+</div>
+
+<div class="table-container">
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Roll No</th>
+                    <th>Last Payment</th>
+                    <th>Next Due Date</th>
+                    <th>Status</th>
+                    <th>Fee</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if students %}
+                    {% for student in students %}
+                    <tr style="background: #fff1f2;">
+                        <td style="font-weight: 600; color: #991b1b;">{{ student.name }}</td>
+                        <td style="font-family: monospace;">{{ student.roll_no }}</td>
+                        <td>{{ student.last_payment_date }}</td>
+                        <td style="font-weight: 600; color: #991b1b;">{{ student.next_due_date }}</td>
+                        <td><span class="badge badge-due">OVERDUE</span></td>
+                        <td>${{ student.fee_amount }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-light);">
+                            <i class="fa-solid fa-check-circle" style="font-size: 3rem; color: #10b981; margin-bottom: 1rem; display:block;"></i>
+                            Great news! All students are up to date with their fees.
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
