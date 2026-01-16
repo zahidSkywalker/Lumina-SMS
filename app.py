@@ -2,21 +2,19 @@ from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from wtforms import StringField, IntegerField, FloatField, PasswordField, SubmitField
+from wtforms import StringField, IntegerField, FloatField, PasswordField, SubmitField, DateField
 from wtforms.validators import DataRequired, Email, NumberRange, Length, EqualTo
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super-secret-key-change-in-production'
 
-# --- CRITICAL CHANGE FOR VERCEL ---
-# Use /tmp for the database to prevent Permission Denied crashes
+# --- FIX FOR VERCEL DATA SAVING & POST REQUESTS ---
+# This line ensures the database is in the writable /tmp folder for Vercel
 import os
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/site.db' 
-# -------------------------------
-
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
@@ -28,7 +26,6 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
-    # Relationship: One User has many Students
     students = db.relationship('Student', backref='author', lazy=True)
 
     def set_password(self, password):
@@ -44,8 +41,25 @@ class Student(db.Model):
     email = db.Column(db.String(120), nullable=False)
     course = db.Column(db.String(50), nullable=False)
     gpa = db.Column(db.Float, nullable=False)
-    # Foreign Key: Links this student to a User
+    
+    # --- NEW FIELDS FOR COACHING & FEES ---
+    start_date = db.Column(db.Date, nullable=False, default=datetime.today)
+    fee_amount = db.Column(db.Float, nullable=False, default=0.0)
+    last_payment_date = db.Column(db.Date, nullable=True) # When did they last pay?
+    
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    @property
+    def next_due_date(self):
+        # If never paid, due date is start_date
+        if not self.last_payment_date:
+            return self.start_date + timedelta(days=30)
+        # Otherwise, due date is last payment + 30 days
+        return self.last_payment_date + timedelta(days=30)
+
+    @property
+    def is_overdue(self):
+        return datetime.now().date() > self.next_due_date
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -70,6 +84,12 @@ class StudentForm(FlaskForm):
     email = StringField('Email Address', validators=[DataRequired(), Email()])
     course = StringField('Course/Major', validators=[DataRequired()])
     gpa = FloatField('GPA (0.0 - 4.0)', validators=[DataRequired(), NumberRange(min=0.0, max=4.0)])
+    
+    # --- NEW FORM FIELDS ---
+    start_date = DateField('Teaching Start Date', validators=[DataRequired()], format='%Y-%m-%d')
+    fee_amount = FloatField('Monthly Fee ($)', validators=[DataRequired()])
+    last_payment_date = DateField('Last Payment Date', validators=[DataRequired()], format='%Y-%m-%d')
+    
     submit = SubmitField('Save Student')
 
 # --- Routes ---
@@ -85,14 +105,11 @@ def home():
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
-    
     form = RegistrationForm()
     if form.validate_on_submit():
-        # Check if user exists
         if User.query.filter_by(username=form.username.data).first():
             flash('Username already taken!', 'danger')
             return redirect(url_for('register'))
-            
         user = User(username=form.username.data)
         user.set_password(form.password.data)
         db.session.add(user)
@@ -105,16 +122,14 @@ def register():
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
-        
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user and user.check_password(form.password.data):
             login_user(user)
-            flash('Login successful!', 'success')
             return redirect(url_for('dashboard'))
         else:
-            flash('Login Unsuccessful. Please check username and password', 'danger')
+            flash('Login Unsuccessful.', 'danger')
     return render_template('login.html', form=form)
 
 @app.route('/logout')
@@ -130,32 +145,45 @@ def dashboard():
     if total_students > 0:
         avg_gpa = db.session.query(db.func.avg(Student.gpa)).filter_by(user_id=current_user.id).scalar()
         top_student = Student.query.filter_by(user_id=current_user.id).order_by(Student.gpa.desc()).first()
+        # Calculate Dues count
+        overdue_count = Student.query.filter_by(user_id=current_user.id).all()
+        overdue_count = sum(1 for s in overdue_count if s.is_overdue)
     else:
         avg_gpa = 0
         top_student = None
+        overdue_count = 0
 
-    return render_template('dashboard.html', total=total_students, avg=avg_gpa, top=top_student)
+    return render_template('dashboard.html', total=total_students, avg=avg_gpa, top=top_student, overdue=overdue_count)
 
 @app.route('/students')
 @login_required
 def student_list():
-    # CRITICAL: Only show students belonging to the logged-in user
     students = Student.query.filter_by(user_id=current_user.id).all()
     return render_template('students.html', students=students)
+
+@app.route('/reminders')
+@login_required
+def reminders():
+    # Filter students who are overdue
+    all_students = Student.query.filter_by(user_id=current_user.id).all()
+    overdue_students = [s for s in all_students if s.is_overdue]
+    return render_template('reminders.html', students=overdue_students)
 
 @app.route('/create', methods=['GET', 'POST'])
 @login_required
 def create_student():
     form = StudentForm()
     if form.validate_on_submit():
-        # Assign the current user's ID to the student
         new_student = Student(
             name=form.name.data,
             roll_no=form.roll_no.data,
             email=form.email.data,
             course=form.course.data,
             gpa=form.gpa.data,
-            user_id=current_user.id # Link to logged in user
+            start_date=form.start_date.data,
+            fee_amount=form.fee_amount.data,
+            last_payment_date=form.last_payment_date.data,
+            user_id=current_user.id
         )
         db.session.add(new_student)
         db.session.commit()
@@ -167,19 +195,18 @@ def create_student():
 @login_required
 def delete_student(id):
     student = Student.query.get_or_404(id)
-    # CRITICAL: Check if the logged in user owns this student
     if student.author != current_user:
         flash('You are not authorized to delete this record.', 'danger')
         return redirect(url_for('student_list'))
-        
     db.session.delete(student)
     db.session.commit()
     flash('Student deleted.', 'info')
     return redirect(url_for('student_list'))
 
-# Initialize DB
+# --- CRITICAL: HANDLE DB RESET FOR VERCEL DEPLOYMENT ---
+# Only needed if schema changes and using /tmp
 with app.app_context():
     db.create_all()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
