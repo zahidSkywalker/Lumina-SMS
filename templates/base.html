@@ -3,19 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumina Student Management</title>
-    <!-- Google Fonts: Inter -->
+    <title>Lumina Management</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- LUMINA DESIGN THEME --- */
         :root {
             --bg-body: #f0f4f8;
-            --primary: #6366f1; /* Indigo */
+            --primary: #6366f1;
             --primary-glow: rgba(99, 102, 241, 0.4);
-            --secondary: #ec4899; /* Pink */
+            --secondary: #ec4899;
             --text-dark: #1e293b;
             --text-light: #64748b;
             --white: #ffffff;
@@ -35,93 +32,165 @@
             flex-direction: column;
         }
 
-        /* Navigation */
+        /* --- MOBILE RESPONSIVE NAVIGATION --- */
         nav {
             background: var(--glass);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 1rem;
             position: sticky;
             top: 0;
             z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
         }
 
         .logo {
             font-weight: 700;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             color: var(--primary);
-            letter-spacing: -0.5px;
-            text-transform: uppercase;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            width: 100%; /* Mobile first */
+            margin-top: 1rem;
+            justify-content: center;
+        }
+
+        /* Desktop: Nav moves to right, width auto */
+        @media (min-width: 768px) {
+            nav { padding: 1rem 2rem; }
+            .nav-links {
+                width: auto;
+                margin-top: 0;
+                justify-content: flex-end;
+            }
         }
 
         .nav-links a {
             text-decoration: none;
             color: var(--text-light);
-            margin-left: 2rem;
             font-weight: 500;
-            transition: color 0.3s;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            transition: all 0.3s;
         }
 
         .nav-links a:hover, .nav-links a.active {
             color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
         }
 
-        .nav-links .btn-nav {
+        .btn-nav {
             background: var(--primary);
             color: white !important;
-            padding: 0.5rem 1.2rem;
-            border-radius: 50px;
+            padding: 0.6rem 1.2rem !important;
         }
-        .nav-links .btn-nav:hover {
-            filter: brightness(1.1);
-        }
+        .nav-links .btn-nav:hover { filter: brightness(1.1); }
 
-        /* Main Container */
+        /* --- MAIN CONTAINER & RESPONSIVENESS --- */
         .container {
+            width: 95%;
             max-width: 1200px;
             margin: 2rem auto;
-            padding: 0 2rem;
+            padding: 0 1rem;
             flex: 1;
-            width: 100%;
         }
 
-        /* Lumina Cards */
+        /* Cards */
         .card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
             margin-top: 2rem;
         }
 
         .lumina-card {
             background: var(--glass);
-            backdrop-filter: blur(8px);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 2rem;
+            border-radius: 16px;
+            padding: 1.5rem;
             box-shadow: var(--shadow);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .lumina-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.12);
+        /* Tables: Scrollable on Mobile */
+        .table-container {
+            background: var(--white);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin-top: 2rem;
         }
 
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
+        .table-wrapper {
+            overflow-x: auto; /* Enables horizontal scroll on small screens */
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            white-space: nowrap; /* Prevents content from wrapping ugly on mobile */
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
             color: var(--text-dark);
-            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #f8fafc; }
+
+        /* Status Badges */
+        .badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-paid { background: #dcfce7; color: #166534; }
+        .badge-due { background: #fee2e2; color: #991b1b; }
+
+        /* Forms */
+        .form-group { margin-bottom: 1.2rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-light); font-size: 0.9rem; }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-family: inherit;
+            background: #f8fafc;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px var(--primary-glow);
         }
 
         /* Buttons */
@@ -134,7 +203,8 @@
             cursor: pointer;
             transition: all 0.3s;
             border: none;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            text-align: center;
         }
 
         .btn-primary {
@@ -142,11 +212,7 @@
             color: white;
             box-shadow: 0 4px 15px var(--primary-glow);
         }
-
-        .btn-primary:hover {
-            filter: brightness(1.1);
-            transform: scale(1.02);
-        }
+        .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
         .btn-danger {
             background: #ef4444;
@@ -156,67 +222,13 @@
             border-radius: 8px;
         }
 
-        /* Tables */
-        .table-container {
-            background: var(--white);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            margin-top: 2rem;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background: #f8fafc;
-            padding: 1rem 1.5rem;
-            text-align: left;
-            font-weight: 600;
-            color: var(--text-light);
-            font-size: 0.85rem;
-            text-transform: uppercase;
-        }
-
-        td {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid #f1f5f9;
-            color: var(--text-dark);
-        }
-
-        tr:last-child td { border-bottom: none; }
-        tr:hover td { background: #f8fafc; }
-
-        /* Forms */
-        .form-group { margin-bottom: 1.5rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-light); }
-        
-        .form-control {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
-            font-family: inherit;
-            font-size: 1rem;
-            background: #f8fafc;
-            transition: border-color 0.3s;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 4px var(--primary-glow);
-        }
-
         /* Flash Messages */
         .flash-msg {
             padding: 1rem;
             border-radius: 10px;
             margin-bottom: 1rem;
             font-weight: 500;
+            font-size: 0.9rem;
         }
         .flash-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
         .flash-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
@@ -226,29 +238,32 @@
             text-align: center;
             padding: 2rem;
             color: var(--text-light);
-            font-size: 0.9rem;
+            font-size: 0.8rem;
+            margin-top: auto;
         }
     </style>
 </head>
 <body>
     <nav>
-        <a href="{{ url_for('home') }}" class="logo"><i class="fa-solid fa-graduation-cap"></i> Lumina SMS</a>
+        <a href="{{ url_for('home') }}" class="logo">
+            <i class="fa-solid fa-graduation-cap"></i> <span style="font-size: 1rem;">Lumina</span>
+        </a>
         <div class="nav-links">
             {% if current_user.is_authenticated %}
                 <a href="{{ url_for('dashboard') }}" {% if request.endpoint == 'dashboard' %}class="active"{% endif %}>Dashboard</a>
                 <a href="{{ url_for('student_list') }}" {% if request.endpoint == 'student_list' %}class="active"{% endif %}>Students</a>
-                <a href="{{ url_for('create_student') }}" {% if request.endpoint == 'create_student' %}class="active"{% endif %}>Add Student</a>
-                <a href="{{ url_for('logout') }}" style="color: #ef4444; margin-left: 2rem;">Logout ({{ current_user.username }})</a>
+                <a href="{{ url_for('reminders') }}" {% if request.endpoint == 'reminders' %}class="active"{% endif %} style="color: #ef4444;"><i class="fa-solid fa-bell"></i> Dues</a>
+                <a href="{{ url_for('create_student') }}" class="btn-nav"><i class="fa-solid fa-plus"></i> Add</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
             {% else %}
-                <a href="{{ url_for('home') }}" {% if request.endpoint == 'home' %}class="active"{% endif %}>Home</a>
-                <a href="{{ url_for('login') }}" {% if request.endpoint == 'login' %}class="active"{% endif %}>Login</a>
+                <a href="{{ url_for('home') }}">Home</a>
+                <a href="{{ url_for('login') }}">Login</a>
                 <a href="{{ url_for('register') }}" class="btn-nav">Register</a>
             {% endif %}
         </div>
     </nav>
 
     <div class="container">
-        <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -256,12 +271,11 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
-
         {% block content %}{% endblock %}
     </div>
 
     <footer>
-        &copy; 2023 Lumina Student Management System. Secure & Private.
+        &copy; 2023 Lumina Management System
     </footer>
 </body>
 </html>
