@@ -1,10 +1,8 @@
-# api/index.py
 from app import app as flask_app
 
-# This is the Vercel entry point
+# Vercel Serverless Handler
 def handler(event, context):
-    # Vercel passes the event/context. We pass them to Flask.
-    # We provide a dummy 'start_response' to satisfy WSGI interface
+    # Properly handle the WSGI interface
     return flask_app(event.environ, lambda status, headers: None)
 
 # This is to make it easier to test locally with `python api/index.py`
