@@ -8,6 +8,7 @@
         <form method="POST">
             {{ form.hidden_tag() }}
             
+            <h4 style="margin: 1.5rem 0 0.5rem; color: var(--text-light); font-size: 0.85rem; text-transform: uppercase;">Academic Info</h4>
             <div class="form-group">
                 <label>{{ form.name.label }}</label>
                 {{ form.name(class="form-control", placeholder="e.g. John Doe") }}
@@ -24,15 +25,30 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                <label>{{ form.course.label }}</label>
+                {{ form.course(class="form-control", placeholder="e.g. Computer Science") }}
+            </div>
+            <div class="form-group">
+                <label>{{ form.email.label }}</label>
+                {{ form.email(class="form-control", placeholder="e.g. john@example.com") }}
+            </div>
+
+            <h4 style="margin: 1.5rem 0 0.5rem; color: var(--text-light); font-size: 0.85rem; text-transform: uppercase;">Fees & Dates</h4>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div class="form-group">
-                    <label>{{ form.email.label }}</label>
-                    {{ form.email(class="form-control", placeholder="e.g. john@example.com") }}
+                    <label>{{ form.start_date.label }}</label>
+                    {{ form.start_date(class="form-control", type="date") }}
                 </div>
                 <div class="form-group">
-                    <label>{{ form.course.label }}</label>
-                    {{ form.course(class="form-control", placeholder="e.g. Computer Science") }}
+                    <label>{{ form.fee_amount.label }}</label>
+                    {{ form.fee_amount(class="form-control", placeholder="100.00") }}
                 </div>
+            </div>
+            <div class="form-group">
+                <label>{{ form.last_payment_date.label }}</label>
+                {{ form.last_payment_date(class="form-control", type="date") }}
+                <small style="color: var(--text-light); font-size: 0.8rem;">Next due date will be 30 days after this.</small>
             </div>
 
             <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
