@@ -13,19 +13,9 @@ app.config['SECRET_KEY'] = 'super-secret-key-change-in-production'
 # --- FIX FOR VERCEL DATA SAVING & POST REQUESTS ---
 # This line ensures the database is in the writable /tmp folder for Vercel
 import os
-
-# Check if DATABASE_URL is set (Vercel Environment Variable)
-if os.environ.get('DATABASE_URL'):
-    # Supabase sometimes uses 'postgres://' but python needs 'postgresql://'
-    db_url = os.environ.get('DATABASE_URL')
-    if db_url.startswith("postgres://"):
-        db_url = db_url.replace("postgres://", "postgresql://", 1)
-    app.config['SQLALCHEMY_DATABASE_URI'] = db_url
-else:
-    # Fallback to local SQLite if not on Vercel
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db' 
-
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/site.db' 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
